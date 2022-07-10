@@ -1,8 +1,21 @@
 fileFormatVersion: 2
-guid: 9c75d9b7bb72ed44f8b82dbe4779f8a1
+guid: 46e5f6bfd5d20b64887a9086e9c2e7b6
+labels:
+- PBR
+- dusty
+- material
+- texture
+- clear
+- transparent
+- glass
+- dried
+- drips
+- generic
+- common
+- ordinary
+timeCreated: 1439320571
+licenseType: Store
 NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

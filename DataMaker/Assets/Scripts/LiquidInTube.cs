@@ -7,16 +7,19 @@ public class LiquidInTube : MonoBehaviour
 
     public float volul;
     public GameObject liqcylinder;
-    public GameObject model;
     public float cylindercapacity;
+    public float cylindermaxYheight;
 
     public GameObject meniscus;
     public TMP_Text info;
 
+    public GameObject pipettedialpin;
+
 
     private void Start()
     {
-        cylindercapacity = 1000f;
+        cylindercapacity = 2000f;  //defines capacity as 2 mL
+        cylindermaxYheight = 1.6f;  //height of liqcylinder at cylindercapacity
 
         UpdateCylinderHeight();
         UpdateInfo();
@@ -39,12 +42,11 @@ public class LiquidInTube : MonoBehaviour
     void UpdateCylinderHeight()
     {
         float cylinderdiam = liqcylinder.transform.localScale.x;  //the diameter of the liquid cylinder in Unity units
-        float tubemaxYheight = model.transform.localScale.y;  //the height of the tube in Unity units
-        float cylinderheight = (volul / cylindercapacity) * tubemaxYheight;  //the proportion of the tube that is full as function of tube height
+        float cylinderheight = (volul / cylindercapacity) * cylindermaxYheight;  //the proportion of the tube that is full as function of tube height
         liqcylinder.transform.localScale = new Vector3(cylinderdiam, cylinderheight, cylinderdiam);
-        liqcylinder.transform.localPosition = new Vector3(0f, cylinderheight - tubemaxYheight, 0f);  //as the cylinder height increases, the position of the cylinder needs to go up.  Initialy it is at the bottom.
+        liqcylinder.transform.localPosition = new Vector3(0f, cylinderheight, 0f);  //as the cylinder height increases, the position of the cylinder needs to go up.  Initialy it is at the bottom.
         
-        float meniscusheight = liqcylinder.transform.localPosition.y + cylinderheight;  //track the top of the liquid
+        float meniscusheight = cylinderheight*2f;  //meniscus is at top of cylinder - which is posn plus that again
         meniscus.transform.localPosition = new Vector3(0f, meniscusheight, 0f);  //move the meniscus marker
     }
 
