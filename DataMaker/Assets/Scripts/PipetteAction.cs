@@ -1,22 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PipetteAction : MonoBehaviour
 {
     // Attached to pipette Tip
 
-    public GameObject dropletPrefab;
-    public GameObject dropletPoint;
     public GameObject activeTube;
+    public TMP_InputField setVol;
     
     public void SuckUp()
     {
-        activeTube.GetComponentInChildren<LiquidInTube>().Remove100();
+        if(activeTube != null)
+        {
+            if (float.TryParse(setVol.text, out float uL))
+            {
+                activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(-uL);
+                SendTipToMeniscus();  
+            }
+        }
     }
 
     public void Dispense()
     {
-        GameObject droplet = Instantiate(dropletPrefab, dropletPoint.transform.position, transform.rotation);
+        if (activeTube != null)
+        {
+            if (float.TryParse(setVol.text, out float uL))
+            {
+                activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(uL);
+                SendTipToMeniscus();
+            }
+        }
     }
+
+
+    public void SendTipToMeniscus()
+    {
+        transform.position = 
+            activeTube.GetComponentInChildren<LiquidInTube>().meniscus.transform.position 
+            + new Vector3(0f, 1f, 0f);
+    }
+
+
 }
