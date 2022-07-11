@@ -32,7 +32,6 @@ public class PipetteAction : MonoBehaviour
     }
 
 
-
     public void SendTipToMeniscus()
     {
         float pipmenoffset = 2.1f; //distance to maintain between mensiscus and middle of pipette
