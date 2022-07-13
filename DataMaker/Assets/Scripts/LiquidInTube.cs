@@ -9,17 +9,21 @@ public class LiquidInTube : MonoBehaviour
     public GameObject liqcylinder;
     public float cylindercapacity;
     public float cylindermaxYheight;
+    float cylinderdiam;
+    float cylinderheight;
 
     public GameObject meniscus;
     public TMP_Text info;
+    
 
     public GameObject pipettedialpin;
 
 
-    private void Start()
+    private void Awake()
     {
         cylindercapacity = 2000f;  //defines capacity as 2 mL
         cylindermaxYheight = 1.6f;  //height of liqcylinder at cylindercapacity
+        cylinderdiam = liqcylinder.transform.localScale.x;  //the diameter of the liquid cylinder in Unity units
 
         UpdateCylinderHeight();
         UpdateInfo();
@@ -41,8 +45,7 @@ public class LiquidInTube : MonoBehaviour
 
     void UpdateCylinderHeight()
     {
-        float cylinderdiam = liqcylinder.transform.localScale.x;  //the diameter of the liquid cylinder in Unity units
-        float cylinderheight = (volul / cylindercapacity) * cylindermaxYheight;  //the proportion of the tube that is full as function of tube height
+        cylinderheight = (volul / cylindercapacity) * cylindermaxYheight;  //the proportion of the tube that is full as function of tube height
         liqcylinder.transform.localScale = new Vector3(cylinderdiam, cylinderheight, cylinderdiam);
         liqcylinder.transform.localPosition = new Vector3(0f, cylinderheight, 0f);  //as the cylinder height increases, the position of the cylinder needs to go up.  Initialy it is at the bottom.
         

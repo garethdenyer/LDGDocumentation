@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class TubeActions : MonoBehaviour
 {
@@ -7,6 +8,8 @@ public class TubeActions : MonoBehaviour
     Animator lidcontroller;
     public string lidstatus;
     public GameObject pipetteguidebutton;
+
+    public TMP_Text tubelabel;
 
     private void Start()
     {
@@ -42,7 +45,6 @@ public class TubeActions : MonoBehaviour
             pipetteguidebutton.SetActive(false);
         }
     }
-
 
 
 }
