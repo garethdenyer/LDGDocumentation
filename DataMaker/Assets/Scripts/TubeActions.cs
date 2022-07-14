@@ -7,7 +7,6 @@ public class TubeActions : MonoBehaviour
 
     Animator lidcontroller;
     public string lidstatus;
-    public GameObject pipetteguidebutton;
 
     public TMP_Text tubelabel;
 
@@ -20,14 +19,13 @@ public class TubeActions : MonoBehaviour
 
     public void LidActions()
     {
-        bool tipintube = gameObject.GetComponent<PipetteGuide>().tipengaged;
+        bool tipintube = gameObject.GetComponentInChildren<PipetteGuide>().tipengaged;
 
         if (lidstatus == "AlreadyOpen" && tipintube==false)
         {
             lidcontroller.SetBool("CloseAction", true);
             lidcontroller.SetBool("OpenAction", false);
             lidstatus = "Closed";
-            pipetteguidebutton.SetActive(false);
         }
 
         else if (lidstatus == "Closed")
@@ -35,14 +33,12 @@ public class TubeActions : MonoBehaviour
             lidcontroller.SetBool("OpenAction", true);
             lidcontroller.SetBool("CloseAction", false);
             lidstatus = "AlreadyOpen";
-            pipetteguidebutton.SetActive(true);
         }
 
         else if (lidstatus == "Open" && tipintube == false)
         {
             lidcontroller.SetBool("InitialClose", true);
             lidstatus = "Closed";
-            pipetteguidebutton.SetActive(false);
         }
     }
 

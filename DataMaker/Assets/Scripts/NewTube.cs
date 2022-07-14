@@ -36,6 +36,4 @@ public class NewTube : MonoBehaviour
 
         newtube.GetComponent<TubeActions>().tubelabel.text = tubeNo.ToString();
     }
-
-
 }

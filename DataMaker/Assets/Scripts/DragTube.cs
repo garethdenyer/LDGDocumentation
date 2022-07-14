@@ -1,7 +1,9 @@
 using UnityEngine;
 
-public class DragObject : MonoBehaviour
+public class DragTube : MonoBehaviour
 {
+    //attached to bottom trigger cylinder on tube
+
     private Vector3 mOffset;
     private float mZCoord;
     GameObject theTube;
@@ -16,23 +18,19 @@ public class DragObject : MonoBehaviour
         mOffset = theTube.transform.position - GetMouseAsWorldPoint();
     }
 
-
     private Vector3 GetMouseAsWorldPoint()
     {
         // Pixel coordinates of mouse (x,y)
         Vector3 mousePoint = Input.mousePosition;
-
         // z coordinate of game object on screen
         mousePoint.z = mZCoord;
-
         // Convert it to world points
         return Camera.main.ScreenToWorldPoint(mousePoint);
     }
 
-
     void OnMouseDrag()
     {
-        if (!theTube.GetComponent<PipetteGuide>().tipengaged)
+        if (!theTube.GetComponentInChildren<PipetteGuide>().tipengaged)
         {
             theTube.transform.position = 
                 new Vector3(GetMouseAsWorldPoint().x + mOffset.x, theTube.transform.position.y, GetMouseAsWorldPoint().z + mOffset.z);

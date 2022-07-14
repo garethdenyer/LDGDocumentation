@@ -19,6 +19,4 @@ public class PipetteStand : MonoBehaviour
 
         tip.transform.position = transform.position + new Vector3(0f, 2.7f, 0f);  //places pipette just just on stand
     }
-
-
 }
