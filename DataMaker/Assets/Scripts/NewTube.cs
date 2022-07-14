@@ -9,14 +9,12 @@ public class NewTube : MonoBehaviour
 
     public GameObject tubePrefab;
     public TMP_InputField volume;
-
     int tubeNo;
 
     private void Start()
     {
         tubeNo = 0;
     }
-
 
     public void CreateTube()
     {

@@ -14,7 +14,6 @@ public class LiquidInTube : MonoBehaviour
 
     public GameObject meniscus;
     public TMP_Text info;
-    
 
     public GameObject pipettedialpin;
 

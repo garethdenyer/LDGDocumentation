@@ -8,7 +8,7 @@ public class PipetteGuide : MonoBehaviour
 
     public bool tipengaged;
 
-    private void OnMouseDown()
+    public void DirectPipette()
     {
         if(transform.parent.gameObject.GetComponent<TubeActions>().lidstatus != "Closed")
         {
