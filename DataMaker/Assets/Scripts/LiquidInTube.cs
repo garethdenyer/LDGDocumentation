@@ -19,7 +19,6 @@ public class LiquidInTube : MonoBehaviour
 
     public GameObject pipettedialpin;
 
-
     private void Awake()
     {
         cylindercapacity = 2000f;  //defines capacity as 2 mL
@@ -62,6 +61,7 @@ public class LiquidInTube : MonoBehaviour
 
         UpdateCylinderHeight();
         UpdateInfo();
+        UpdateColour();
     }
 
     void UpdateCylinderHeight()
@@ -77,5 +77,13 @@ public class LiquidInTube : MonoBehaviour
     void UpdateInfo()
     {
         info.text = volul.ToString("N0") + '\n' + conc.ToString("N1") ;
+    }
+
+    void UpdateColour()
+    {
+        Color water = Color.white;
+        Color substance = Color.red;
+        Color blendedColour = Color.Lerp(water, substance, conc);
+        liqcylinder.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", blendedColour);
     }
 }

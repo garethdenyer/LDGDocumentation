@@ -12,6 +12,10 @@ public class NewTube : MonoBehaviour
     public TMP_InputField concinput;
     int tubeNo;
 
+    public string creationrecord;
+
+    public List<GameObject> tubes = new List<GameObject>();
+
     private void Start()
     {
         tubeNo = 0;
@@ -21,6 +25,7 @@ public class NewTube : MonoBehaviour
     {
         tubeNo += 1;
         GameObject newtube = Instantiate(tubePrefab, new Vector3(0f, 0f, 0f), transform.rotation);
+        tubes.Add(newtube);
 
         newtube.transform.name = "T" + tubeNo.ToString();
         newtube.GetComponent<TubeActions>().tubelabel.text = tubeNo.ToString();
@@ -50,5 +55,8 @@ public class NewTube : MonoBehaviour
 
         //send that volume and quantity to the tube 
         newtube.GetComponentInChildren<LiquidInTube>().AdjustVol(vol, qty);
+
+        //add to creation record
+        creationrecord += newtube.transform.name + '\t' + vol.ToString("N0") + " uL" + '\t' + (qty / vol).ToString("N2") + " mM" + '\n';
     }
 }

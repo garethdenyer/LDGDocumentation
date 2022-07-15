@@ -14,8 +14,13 @@ public class PipetteAction : MonoBehaviour
     public float aliquotconc;
     public TMP_Text info;
 
+    public string actionrecord;
+
     private void Start()
     {
+        //make header row for action record 
+        actionrecord = "Tube" + '\t' + "Action" + '\t' + "Volume" + '\n';
+
         AdjustAliquot();
     }
 
@@ -46,6 +51,9 @@ public class PipetteAction : MonoBehaviour
                     //change the volume and concentration of the aliquot
                     aliquotvol += uL;
                     aliquotconc = postsuckupqty / aliquotvol;
+
+                    //record action
+                    actionrecord += activeTube.name + '\t' + "Suck up" + '\t' + uL + '\n';
                 }
 
                 else if (direction == "dispense")
@@ -64,10 +72,14 @@ public class PipetteAction : MonoBehaviour
 
                     //Change the volume of the aliquot - note that concentration does NOT change
                     aliquotvol -= uL;
+
+                    //record action
+                    actionrecord += activeTube.name + '\t' + "Dispense" + '\t' + uL + '\n';
                 }
 
                 AdjustAliquot();
                 SendTipToMeniscus();
+                UpdateColour();
             }
         }
     }
@@ -83,7 +95,6 @@ public class PipetteAction : MonoBehaviour
         info.text = aliquotvol.ToString("N0");
     }
 
-
     public void SendTipToMeniscus()
     {
         float pipmenoffset = 2.1f; //distance to maintain between mensiscus and middle of pipette
@@ -95,5 +106,11 @@ public class PipetteAction : MonoBehaviour
         thecanvas.transform.position = topoftube + new Vector3(0f, 0f, -1f);  //the minus one keeps the canvas in front of the pipette
     }
 
-
+    void UpdateColour()
+    {
+        Color water = Color.white;
+        Color substance = Color.red;
+        Color blendedColour = Color.Lerp(water, substance, aliquotconc);
+        aliquot.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", blendedColour);
+    }
 }
