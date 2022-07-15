@@ -6,6 +6,8 @@ public class LiquidInTube : MonoBehaviour
     // Attached to Liquid part of a tube
 
     public float volul;
+    public float conc;
+
     public GameObject liqcylinder;
     public float cylindercapacity;
     public float cylindermaxYheight;
@@ -29,14 +31,34 @@ public class LiquidInTube : MonoBehaviour
     }
 
 
-    public void AdjustVol(float volchange)
+    public void AdjustVol(float volchange, float qtychange)
     {
-        if (volul + volchange < 0) //if change woudl make vol negative
+        //calculate the quanity in the tube before the change
+        float initqty = volul * conc;
+
+        //check if change woudl make vol negative and adjust if necessary. Only applies on suckup.
+        if (volul + volchange < 0) 
         {
             volchange = -volul;
+            //need to adjust the quantity going out. It will now be calculated on volul, not volchange
+            qtychange = conc * -volul;
         }
 
+        //calcuate the new quantity in the tube
+        float newqty = initqty + qtychange;
+
+        //readjust the final volume and concentration
         volul += volchange;
+
+        //deal with the case where calculation can't be calculated - perhaps only needed where volume is zero?
+        if (float.IsNaN(newqty / volul) || volul == 0f)
+        {
+            conc = 0f;
+        }
+        else
+        {
+            conc = newqty / volul;
+        }
 
         UpdateCylinderHeight();
         UpdateInfo();
@@ -54,6 +76,6 @@ public class LiquidInTube : MonoBehaviour
 
     void UpdateInfo()
     {
-        info.text = volul.ToString("N0");
+        info.text = volul.ToString("N0") + '\n' + conc.ToString("N1") ;
     }
 }

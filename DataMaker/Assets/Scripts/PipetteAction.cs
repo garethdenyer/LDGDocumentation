@@ -11,6 +11,7 @@ public class PipetteAction : MonoBehaviour
 
     public GameObject aliquot;
     public float aliquotvol;
+    public float aliquotconc;
     public TMP_Text info;
 
     private void Start()
@@ -26,22 +27,43 @@ public class PipetteAction : MonoBehaviour
             {
                 if (direction == "suckup")  //there may be other options!
                 {
+                    //check that volume is not greater than what is in tube
                     if (uL > activeTube.GetComponentInChildren<LiquidInTube>().volul)
                     {
                         uL = activeTube.GetComponentInChildren<LiquidInTube>().volul;
                     }
-                    activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(-uL);
+
+                    //quantity in aliquot before sucking up new amount
+                    float aliquotpresuckupqty = aliquotvol * aliquotconc;
+                    //quantity sucked up from the tube
+                    float suckupqty = uL * activeTube.GetComponentInChildren<LiquidInTube>().conc;
+                    //new quantity in the aliquot
+                    float postsuckupqty = aliquotpresuckupqty + suckupqty;
+
+                    //change the parameters in the target tube (note both reductions)
+                    activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(-uL, -suckupqty);
+
+                    //change the volume and concentration of the aliquot
                     aliquotvol += uL;
+                    aliquotconc = postsuckupqty / aliquotvol;
                 }
 
                 else if (direction == "dispense")
                 {
+                    //check that the volume is not greater than what is in the pipette aliquot
                     if (uL >= aliquotvol)
                     {
                         uL = aliquotvol;
                     }
-                        activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(uL);
-                        aliquotvol -= uL;
+
+                    //calcuate the quantity to send to the target tube
+                    float aliquotqty = uL * aliquotconc;
+
+                    //change the parameters in the target tube (both positives as we are adding to it)
+                    activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(uL, aliquotqty);
+
+                    //Change the volume of the aliquot - note that concentration does NOT change
+                    aliquotvol -= uL;
                 }
 
                 AdjustAliquot();
