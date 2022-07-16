@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class PipetteAction : MonoBehaviour
 {
@@ -11,17 +12,32 @@ public class PipetteAction : MonoBehaviour
 
     public GameObject aliquot;
     public float aliquotvol;
-    public float aliquotconc;
+    public List<float> aliquotconcs = new List<float>();
+
     public TMP_Text info;
 
     public string actionrecord;
+
+    NewTube newtubescript;
 
     private void Start()
     {
         //make header row for action record 
         actionrecord = "Tube" + '\t' + "Action" + '\t' + "Volume" + '\n';
+        aliquotvol = 0f;  //may be redundant
+        newtubescript = FindObjectOfType<NewTube>();
 
+        SetUpAliquotConcsList();
         AdjustAliquot();
+    }
+
+    public void SetUpAliquotConcsList()
+    {
+        //set up a holding list for aliquot concs
+        for (int i = 0; i < newtubescript.components.Count; i++)
+        {
+            aliquotconcs.Add(0f);
+        }
     }
 
     public void ThumbAction(string direction)
@@ -38,19 +54,40 @@ public class PipetteAction : MonoBehaviour
                         uL = activeTube.GetComponentInChildren<LiquidInTube>().volul;
                     }
 
-                    //quantity in aliquot before sucking up new amount
-                    float aliquotpresuckupqty = aliquotvol * aliquotconc;
+                    //quantities in aliquot before sucking up new amount
+                    List<float> presuckaliquants = new List<float>();
+                    for(int i=0; i < newtubescript.components.Count; i++)
+                    {
+                        presuckaliquants.Add(aliquotvol * aliquotconcs[i]);
+                    }
+
                     //quantity sucked up from the tube
-                    float suckupqty = uL * activeTube.GetComponentInChildren<LiquidInTube>().conc;
-                    //new quantity in the aliquot
-                    float postsuckupqty = aliquotpresuckupqty + suckupqty;
+                    List<float> suckedupqties = new List<float>();
+                    for (int i = 0; i < newtubescript.components.Count; i++)
+                    {
+                        suckedupqties.Add(uL * activeTube.GetComponentInChildren<LiquidInTube>().concs[i]);
+                    }
+
+                    //new quantities in the aliquot
+                    List<float> postsuckaliquants = new List<float>();
+                    for (int i = 0; i < newtubescript.components.Count; i++)
+                    {
+                        postsuckaliquants.Add(presuckaliquants[i] + suckedupqties[i]);
+                    }
 
                     //change the parameters in the target tube (note both reductions)
-                    activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(-uL, -suckupqty);
+                    for (int i = 0; i < newtubescript.components.Count; i++)
+                    {
+                        suckedupqties[i]=suckedupqties[i]*-1f;
+                    }
+                    activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(-uL, suckedupqties);
 
                     //change the volume and concentration of the aliquot
                     aliquotvol += uL;
-                    aliquotconc = postsuckupqty / aliquotvol;
+                    for (int i = 0; i < newtubescript.components.Count; i++)
+                    {
+                        aliquotconcs[i] = postsuckaliquants[i] / aliquotvol;
+                    }
 
                     //record action
                     actionrecord += activeTube.name + '\t' + "Suck up" + '\t' + uL + '\n';
@@ -65,10 +102,14 @@ public class PipetteAction : MonoBehaviour
                     }
 
                     //calcuate the quantity to send to the target tube
-                    float aliquotqty = uL * aliquotconc;
+                    List<float> qtstosend = new List<float>();
+                    for (int i = 0; i < newtubescript.components.Count; i++)
+                    {
+                        qtstosend.Add(uL * aliquotconcs[i]);
+                    }
 
                     //change the parameters in the target tube (both positives as we are adding to it)
-                    activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(uL, aliquotqty);
+                    activeTube.GetComponentInChildren<LiquidInTube>().AdjustVol(uL, qtstosend);
 
                     //Change the volume of the aliquot - note that concentration does NOT change
                     aliquotvol -= uL;
@@ -110,7 +151,7 @@ public class PipetteAction : MonoBehaviour
     {
         Color water = Color.white;
         Color substance = Color.red;
-        Color blendedColour = Color.Lerp(water, substance, aliquotconc);
+        Color blendedColour = Color.Lerp(water, substance, aliquotconcs[1]); //based on glucose - needs to be set centrally
         aliquot.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", blendedColour);
     }
 }

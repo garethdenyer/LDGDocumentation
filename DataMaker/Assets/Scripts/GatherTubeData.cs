@@ -19,7 +19,7 @@ public class GatherTubeData : MonoBehaviour
         //scroll through each tube, calcuate each absorbance, create each line item
         foreach (GameObject tub in this.GetComponent<NewTube>().tubes)
         {
-            float absorbance = tub.GetComponentInChildren<LiquidInTube>().conc * 6.9f; //using extinction coefficient of 6.9...
+            float absorbance = tub.GetComponentInChildren<LiquidInTube>().concs[1] * 6.9f; //using extinction coefficient of 6.9...
             spreadsheet += tub.transform.name + '\t' + absorbance.ToString("N3") + '\n';
         }
 
@@ -41,8 +41,20 @@ public class GatherTubeData : MonoBehaviour
 
     public void GetTubeCreations()
     {
-        //send the completed spreadsheet to an input field so it can be copied
-        datapresentation.text = this.GetComponent<NewTube>().creationrecord;
+        string tubeendings = "Endpoints" + '\n';
+
+        //scroll through each tube, obtain each concentration
+        foreach (GameObject tub in this.GetComponent<NewTube>().tubes)
+        {
+            tubeendings += tub.transform.name + '\n';
+            for (int i=0; i<this.GetComponent<NewTube>().components.Count; i++)
+            {
+                tubeendings += this.GetComponent<NewTube>().components[i] + '\t' + tub.GetComponentInChildren<LiquidInTube>().concs[i].ToString("N2")+'\n';
+            }
+        }
+
+        //send the completed spreadsheet to an input field so it can be copied, adding tubeendings
+        datapresentation.text = this.GetComponent<NewTube>().creationrecord + '\n' + tubeendings;
         //display the dialog containing that input field
         datadisplaypanel.SetActive(true);
     }

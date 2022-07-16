@@ -9,16 +9,84 @@ public class NewTube : MonoBehaviour
 
     public GameObject tubePrefab;
     public TMP_InputField volinput;
-    public TMP_InputField concinput;
+
     int tubeNo;
-
-    public string creationrecord;
-
     public List<GameObject> tubes = new List<GameObject>();
+
+    public TMP_Dropdown solutionDropdown;
+    public List<string> components = new List<string>(); //each individual component that needs its concentration/amount monitored
+    List<float> temporaryconcs = new List<float>();  //needs to be on this level as the list has to be accesed between functions
+
+    string chosensoln;
+    public string creationrecord;
 
     private void Start()
     {
         tubeNo = 0;
+
+        SetUpComponents(); 
+        SetUpTempConcsList();
+        SetUpSolutionsDropdown();
+        EnactDropdownChoice(0); //to ensure there is no funny business from making a tube without first using dropdown
+
+        //force pipette tip to create list of relevant concentrations
+        //not necessary if pipette is instantiated later
+        GameObject tip = GameObject.Find("Pipette"); //locate the pipette tip
+        tip.GetComponent<PipetteAction>().SetUpAliquotConcsList();
+    }
+
+    void SetUpComponents()
+    {
+        components.Add("Tris");
+        components.Add("Phenol Red");
+    }
+
+    void SetUpTempConcsList()
+    {
+        for (int i = 0; i < components.Count; i++)
+        {
+            temporaryconcs.Add(0f);
+        }
+    }
+
+    void SetUpSolutionsDropdown()
+    {
+        List<string> solutionOptions = new List<string>();
+        solutionOptions.Add("Water");
+        solutionOptions.Add("1 mM Phenol Red");
+        solutionOptions.Add("Tris Buffer");
+
+        solutionDropdown.ClearOptions();
+        solutionDropdown.AddOptions(solutionOptions);
+    }
+
+    public void EnactDropdownChoice(int choice)  //triggered when dropdown interacted with
+    {
+        //firstly reset the list concentrations for every possible component so no inheritance from last choice
+        for (int i = 0; i < components.Count; i++)
+        {
+            temporaryconcs[i] = 0f;
+        }
+
+        //now selectively change particular component concentrations according to choice
+        switch (choice)
+        {
+            case 0: //water - no changes are needed
+                chosensoln = "Water";
+                break;
+            case 1: //glucose is 1 mM
+                temporaryconcs[1] = 1f;
+                chosensoln = "1 mM Phenol Red";
+                break;            
+            case 2: //buffer Tris is 10 mM
+                temporaryconcs[0] = 10f;
+                chosensoln = "10 mM Tris";
+                break;
+            default: //for when no choice registered (in case this happens right at the start)
+                temporaryconcs[0] = 0f;
+                chosensoln = "water";
+                break;
+        }
     }
 
     public void CreateTube()
@@ -32,7 +100,7 @@ public class NewTube : MonoBehaviour
 
         //Set up variables to work out volume and amount to add.
         float vol=0;
-        float qty=0;
+        List<float> qtys = new List<float>();
 
         //decide on the volume.  It mustn't exceed the tube capacity
         if (float.TryParse(volinput.text, out float uL))
@@ -47,16 +115,16 @@ public class NewTube : MonoBehaviour
             }
         }
 
-        //decide on the concentration
-        if (float.TryParse(concinput.text, out float conc)) 
+        //decide on the quantities - these will be derived from the concentrations set in the dropdown
+        for (int i = 0; i < components.Count; i++)
         {
-            qty = conc * vol;
+            qtys.Add(temporaryconcs[i] * vol);
         }
 
         //send that volume and quantity to the tube 
-        newtube.GetComponentInChildren<LiquidInTube>().AdjustVol(vol, qty);
+        newtube.GetComponentInChildren<LiquidInTube>().AdjustVol(vol, qtys);
 
         //add to creation record
-        creationrecord += newtube.transform.name + '\t' + vol.ToString("N0") + " uL" + '\t' + (qty / vol).ToString("N2") + " mM" + '\n';
+        creationrecord += newtube.transform.name + '\t' + vol.ToString("N0") + " uL" + '\t' + chosensoln + '\n';
     }
 }

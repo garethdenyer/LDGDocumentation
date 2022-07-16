@@ -1,12 +1,13 @@
-using UnityEngine;
+using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
 
 public class LiquidInTube : MonoBehaviour
 {
     // Attached to Liquid part of a tube
 
     public float volul;
-    public float conc;
+    public List<float> concs = new List<float>();
 
     public GameObject liqcylinder;
     public float cylindercapacity;
@@ -19,45 +20,69 @@ public class LiquidInTube : MonoBehaviour
 
     public GameObject pipettedialpin;
 
+    NewTube newtubescript;
+
     private void Awake()
     {
+        newtubescript = FindObjectOfType<NewTube>();
         cylindercapacity = 2000f;  //defines capacity as 2 mL
         cylindermaxYheight = 1.6f;  //height of liqcylinder at cylindercapacity
         cylinderdiam = liqcylinder.transform.localScale.x;  //the diameter of the liquid cylinder in Unity units
+
+        for (int i = 0; i < newtubescript.components.Count; i++)
+        {
+            concs.Add(0);
+        }
 
         UpdateCylinderHeight();
         UpdateInfo();
     }
 
 
-    public void AdjustVol(float volchange, float qtychange)
+    public void AdjustVol(float volchange, List<float> qtychanges)
     {
-        //calculate the quanity in the tube before the change
-        float initqty = volul * conc;
+        //calculate the quantity of each component in the tube before the change
+        List<float> initialqtys = new List<float>();
+        for (int i = 0; i < newtubescript.components.Count; i++)
+        {
+            initialqtys.Add(volul * concs[i]);
+        }
+
 
         //check if change woudl make vol negative and adjust if necessary. Only applies on suckup.
-        if (volul + volchange < 0) 
+        if (volul + volchange < 0)
         {
             volchange = -volul;
             //need to adjust the quantity going out. It will now be calculated on volul, not volchange
-            qtychange = conc * -volul;
+            for (int i = 0; i < newtubescript.components.Count; i++)
+            {
+                qtychanges[i] = (-volul * concs[i]);  //note the negative
+            }
         }
 
         //calcuate the new quantity in the tube
-        float newqty = initqty + qtychange;
+        List<float> newqtys = new List<float>();
+        for (int i = 0; i < newtubescript.components.Count; i++)
+        {
+            newqtys.Add(initialqtys[i] + qtychanges[i]);
+        }
 
         //readjust the final volume and concentration
         volul += volchange;
 
         //deal with the case where calculation can't be calculated - perhaps only needed where volume is zero?
-        if (float.IsNaN(newqty / volul) || volul == 0f)
+        for (int i = 0; i < newtubescript.components.Count; i++)
         {
-            conc = 0f;
+            if (float.IsNaN(newqtys[i] / volul) || volul == 0f)
+            {
+                concs[i] = 0f;
+            }
+            else
+            {
+                concs[i] = newqtys[i] / volul;
+            }
         }
-        else
-        {
-            conc = newqty / volul;
-        }
+
 
         UpdateCylinderHeight();
         UpdateInfo();
@@ -69,21 +94,21 @@ public class LiquidInTube : MonoBehaviour
         cylinderheight = (volul / cylindercapacity) * cylindermaxYheight;  //the proportion of the tube that is full as function of tube height
         liqcylinder.transform.localScale = new Vector3(cylinderdiam, cylinderheight, cylinderdiam);
         liqcylinder.transform.localPosition = new Vector3(0f, cylinderheight, 0f);  //as the cylinder height increases, the position of the cylinder needs to go up.  Initialy it is at the bottom.
-        
-        float meniscusheight = cylinderheight*2f;  //meniscus is at top of cylinder - which is posn plus that again
+
+        float meniscusheight = cylinderheight * 2f;  //meniscus is at top of cylinder - which is posn plus that again
         meniscus.transform.localPosition = new Vector3(0f, meniscusheight, 0f);  //move the meniscus marker
     }
 
     void UpdateInfo()
     {
-        info.text = volul.ToString("N0") + '\n' + conc.ToString("N1") ;
+        info.text = volul.ToString("N0") + '\n' + concs[1].ToString("N1");
     }
 
     void UpdateColour()
     {
         Color water = Color.white;
         Color substance = Color.red;
-        Color blendedColour = Color.Lerp(water, substance, conc);
+        Color blendedColour = Color.Lerp(water, substance, concs[1]); //based on glucose
         liqcylinder.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", blendedColour);
     }
 }
