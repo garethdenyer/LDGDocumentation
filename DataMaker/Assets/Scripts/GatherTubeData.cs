@@ -31,12 +31,15 @@ public class GatherTubeData : MonoBehaviour
 
     public void GetPipetteActions()
     {
-        GameObject tip = GameObject.Find("Pipette"); //locate the pipette tip
+        if (GameObject.Find("Pipette"))
+        {
+            GameObject tip = GameObject.Find("Pipette"); //locate the pipette tip
 
-        //send the completed spreadsheet to an input field so it can be copied
-        datapresentation.text = tip.GetComponent<PipetteAction>().actionrecord;
-        //display the dialog containing that input field
-        datadisplaypanel.SetActive(true);
+            //send the completed spreadsheet to an input field so it can be copied
+            datapresentation.text = tip.GetComponent<PipetteAction>().actionrecord;
+            //display the dialog containing that input field
+            datadisplaypanel.SetActive(true);
+        }
     }
 
     public void GetTubeCreations()
@@ -46,10 +49,10 @@ public class GatherTubeData : MonoBehaviour
         //scroll through each tube, obtain each concentration
         foreach (GameObject tub in this.GetComponent<NewTube>().tubes)
         {
-            tubeendings += tub.transform.name + '\n';
-            for (int i=0; i<this.GetComponent<NewTube>().components.Count; i++)
+            tubeendings += tub.transform.name + '\t' + tub.GetComponentInChildren<LiquidInTube>().volul.ToString("N0") + '\n';
+            for (int i=0; i<this.GetComponent<ScearioSetup>().components.Count; i++)
             {
-                tubeendings += this.GetComponent<NewTube>().components[i] + '\t' + tub.GetComponentInChildren<LiquidInTube>().concs[i].ToString("N2")+'\n';
+                tubeendings += this.GetComponent<ScearioSetup>().components[i] + '\t' + tub.GetComponentInChildren<LiquidInTube>().concs[i].ToString("N2")+'\n';
             }
         }
 

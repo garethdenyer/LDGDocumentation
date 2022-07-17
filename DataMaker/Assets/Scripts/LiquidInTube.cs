@@ -20,16 +20,16 @@ public class LiquidInTube : MonoBehaviour
 
     public GameObject pipettedialpin;
 
-    NewTube newtubescript;
+    ScearioSetup ScenarioSetupscript;
 
     private void Awake()
     {
-        newtubescript = FindObjectOfType<NewTube>();
+        ScenarioSetupscript = FindObjectOfType<ScearioSetup>();
         cylindercapacity = 2000f;  //defines capacity as 2 mL
         cylindermaxYheight = 1.6f;  //height of liqcylinder at cylindercapacity
         cylinderdiam = liqcylinder.transform.localScale.x;  //the diameter of the liquid cylinder in Unity units
 
-        for (int i = 0; i < newtubescript.components.Count; i++)
+        for (int i = 0; i < ScenarioSetupscript.components.Count; i++)
         {
             concs.Add(0);
         }
@@ -43,18 +43,17 @@ public class LiquidInTube : MonoBehaviour
     {
         //calculate the quantity of each component in the tube before the change
         List<float> initialqtys = new List<float>();
-        for (int i = 0; i < newtubescript.components.Count; i++)
+        for (int i = 0; i < concs.Count; i++)
         {
             initialqtys.Add(volul * concs[i]);
         }
-
 
         //check if change woudl make vol negative and adjust if necessary. Only applies on suckup.
         if (volul + volchange < 0)
         {
             volchange = -volul;
             //need to adjust the quantity going out. It will now be calculated on volul, not volchange
-            for (int i = 0; i < newtubescript.components.Count; i++)
+            for (int i = 0; i < concs.Count; i++)
             {
                 qtychanges[i] = (-volul * concs[i]);  //note the negative
             }
@@ -62,7 +61,7 @@ public class LiquidInTube : MonoBehaviour
 
         //calcuate the new quantity in the tube
         List<float> newqtys = new List<float>();
-        for (int i = 0; i < newtubescript.components.Count; i++)
+        for (int i = 0; i < concs.Count; i++)
         {
             newqtys.Add(initialqtys[i] + qtychanges[i]);
         }
@@ -71,7 +70,7 @@ public class LiquidInTube : MonoBehaviour
         volul += volchange;
 
         //deal with the case where calculation can't be calculated - perhaps only needed where volume is zero?
-        for (int i = 0; i < newtubescript.components.Count; i++)
+        for (int i = 0; i < concs.Count; i++)
         {
             if (float.IsNaN(newqtys[i] / volul) || volul == 0f)
             {
@@ -83,10 +82,10 @@ public class LiquidInTube : MonoBehaviour
             }
         }
 
-
         UpdateCylinderHeight();
         UpdateInfo();
-        UpdateColour();
+        //Update colour
+        liqcylinder.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", ScenarioSetupscript.UpdateColour(concs[1]));
     }
 
     void UpdateCylinderHeight()
@@ -104,11 +103,4 @@ public class LiquidInTube : MonoBehaviour
         info.text = volul.ToString("N0") + '\n' + concs[1].ToString("N1");
     }
 
-    void UpdateColour()
-    {
-        Color water = Color.white;
-        Color substance = Color.red;
-        Color blendedColour = Color.Lerp(water, substance, concs[1]); //based on glucose
-        liqcylinder.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", blendedColour);
-    }
 }

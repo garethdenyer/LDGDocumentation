@@ -41,6 +41,4 @@ public class TubeActions : MonoBehaviour
             lidstatus = "Closed";
         }
     }
-
-
 }
