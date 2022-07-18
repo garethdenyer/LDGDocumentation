@@ -36,6 +36,12 @@ public class RaycastActions : MonoBehaviour
                 {
                     hit.transform.gameObject.GetComponent<PipetteGuide>().DirectPipette();
                 }
+
+                if (hit.transform.name == "MiddleTrigger")
+                {
+
+                    hit.transform.gameObject.GetComponent<TubeMiddleTrigger>().EditTubeLabel();
+                }
             }
         }
 

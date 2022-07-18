@@ -8,8 +8,6 @@ public class TubeActions : MonoBehaviour
     Animator lidcontroller;
     public string lidstatus;
 
-    public TMP_Text tubelabel;
-
     private void Start()
     {
         lidstatus = "Open";

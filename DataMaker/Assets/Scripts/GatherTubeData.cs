@@ -11,6 +11,13 @@ public class GatherTubeData : MonoBehaviour
     public TMP_InputField datapresentation;  //an input field to which data can be passed for copying in play mode
     public GameObject datadisplaypanel;  //a panel that contains the input field.  Can be made visible/hidden.
 
+    ScearioSetup scenariosetupscript;
+
+    private void Start()
+    {
+        scenariosetupscript = FindObjectOfType<ScearioSetup>();
+    }
+
     public void GetAbsorbances()
     {
         //make header row - note completelynew spreadsheet each time this is called
@@ -19,7 +26,7 @@ public class GatherTubeData : MonoBehaviour
         //scroll through each tube, calcuate each absorbance, create each line item
         foreach (GameObject tub in this.GetComponent<NewTube>().tubes)
         {
-            float absorbance = tub.GetComponentInChildren<LiquidInTube>().concs[1] * 6.9f; //using extinction coefficient of 6.9...
+            float absorbance = tub.GetComponentInChildren<LiquidInTube>().concs[scenariosetupscript.colourcomponent] * scenariosetupscript.extinctioncoeff; 
             spreadsheet += tub.transform.name + '\t' + absorbance.ToString("N3") + '\n';
         }
 

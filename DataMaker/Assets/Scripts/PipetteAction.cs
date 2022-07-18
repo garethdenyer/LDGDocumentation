@@ -118,7 +118,7 @@ public class PipetteAction : MonoBehaviour
                 AdjustAliquot();
                 SendTipToMeniscus();
                 //update colour
-                aliquot.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", ScenarioSetupscript.UpdateColour(aliquotconcs[1]));
+                aliquot.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", ScenarioSetupscript.UpdateColour(aliquotconcs[ScenarioSetupscript.colourcomponent]));
             }
         }
     }

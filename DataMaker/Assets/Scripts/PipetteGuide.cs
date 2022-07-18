@@ -10,6 +10,10 @@ public class PipetteGuide : MonoBehaviour
 
     public void DirectPipette()
     {
+        if (!GameObject.Find("Pipette"))
+        {
+            return;
+        }
         if(transform.parent.gameObject.GetComponent<TubeActions>().lidstatus != "Closed")
         {
             GameObject tip = GameObject.Find("Pipette"); //locate the pipette tip

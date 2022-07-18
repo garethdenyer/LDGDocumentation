@@ -16,7 +16,6 @@ public class LiquidInTube : MonoBehaviour
     float cylinderheight;
 
     public GameObject meniscus;
-    public TMP_Text info;
 
     public GameObject pipettedialpin;
 
@@ -35,7 +34,6 @@ public class LiquidInTube : MonoBehaviour
         }
 
         UpdateCylinderHeight();
-        UpdateInfo();
     }
 
 
@@ -83,9 +81,8 @@ public class LiquidInTube : MonoBehaviour
         }
 
         UpdateCylinderHeight();
-        UpdateInfo();
         //Update colour
-        liqcylinder.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", ScenarioSetupscript.UpdateColour(concs[1]));
+        liqcylinder.GetComponent<MeshRenderer>().material.SetColor("_BaseColor", ScenarioSetupscript.UpdateColour(concs[ScenarioSetupscript.colourcomponent]));
     }
 
     void UpdateCylinderHeight()
@@ -97,10 +94,4 @@ public class LiquidInTube : MonoBehaviour
         float meniscusheight = cylinderheight * 2f;  //meniscus is at top of cylinder - which is posn plus that again
         meniscus.transform.localPosition = new Vector3(0f, meniscusheight, 0f);  //move the meniscus marker
     }
-
-    void UpdateInfo()
-    {
-        info.text = volul.ToString("N0") + '\n' + concs[1].ToString("N1");
-    }
-
 }

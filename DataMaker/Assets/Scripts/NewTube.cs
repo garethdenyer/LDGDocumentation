@@ -42,7 +42,7 @@ public class NewTube : MonoBehaviour
         tubes.Add(newtube);
 
         newtube.transform.name = "T" + tubeNo.ToString();
-        newtube.GetComponent<TubeActions>().tubelabel.text = tubeNo.ToString();
+        newtube.GetComponentInChildren<TubeMiddleTrigger>().tubelabel.text = tubeNo.ToString();
 
         //Set up variables to work out volume and amount to add.
         float vol=0;
